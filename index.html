@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Servers</title>
+  <style>
+    /* Background */
+    body {
+      background: linear-gradient(135deg, #0b1220, #101a2f);
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      overflow: hidden;
+      height: 100vh;
+      color: white;
+    }
+
+    /* Floating cubes */
+    .cube {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      background-color: rgba(255, 255, 255, 0.05);
+      transform: rotate(45deg);
+      animation: spin 10s linear infinite;
+    }
+
+    .cube:nth-child(1) { top: 10%; left: 10%; animation-delay: 0s; }
+    .cube:nth-child(2) { top: 30%; right: 15%; animation-delay: 2s; }
+    .cube:nth-child(3) { bottom: 20%; left: 30%; animation-delay: 4s; }
+    .cube:nth-child(4) { bottom: 10%; right: 40%; animation-delay: 6s; }
+
+    @keyframes spin {
+      0%   { transform: rotate(45deg) scale(1); }
+      50%  { transform: rotate(225deg) scale(1.2); }
+      100% { transform: rotate(405deg) scale(1); }
+    }
+
+    /* Main content */
+    .container {
+      position: relative;
+      z-index: 5;
+      padding: 40px 60px;
+    }
+
+    h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .server-card {
+      background-color: #0000aa;
+      border-radius: 4px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .server-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .server-title {
+      font-weight: bold;
+      font-size: 18px;
+      color: white;
+    }
+
+    .server-subtitle {
+      font-size: 14px;
+      color: #b8b8ff;
+      margin-top: 2px;
+    }
+
+    .status-indicator {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: yellow;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="cube"></div>
+  <div class="cube"></div>
+  <div class="cube"></div>
+  <div class="cube"></div>
+
+  <div class="container">
+    <h2>Servers</h2>
+
+    <div class="server-card">
+      <div class="server-text">
+        <span class="server-title">EU Lategame Solo Server Starting!</span>
+        <span class="server-subtitle">EU Lategame Solo Server Is Starting Soon!</span>
+      </div>
+      <div class="status-indicator"></div>
+    </div>
+
+    <div class="server-card">
+      <div class="server-text">
+        <span class="server-title">EU LTM Server Starting!</span>
+        <span class="server-subtitle">EU LTM Server Is Starting Soon!</span>
+      </div>
+      <div class="status-indicator"></div>
+    </div>
+  </div>
+
+  <script>
+    async function updateStatus() {
+      try {
+        const res = await fetch("http://localhost:3000/status");
+        if (!res.ok) throw new Error('Network response not ok');
+        const data = await res.json();
+
+        const cards = document.querySelectorAll(".server-card");
+        const statuses = [data.status1, data.status2];
+
+        cards.forEach((card, i) => {
+          card.querySelector(".server-title").textContent = statuses[i].title;
+          card.querySelector(".server-subtitle").textContent = statuses[i].subtitle;
+          card.querySelector(".status-indicator").style.backgroundColor = statuses[i].color;
+        });
+      } catch (err) {
+        console.error("Failed to fetch server status:", err);
+      }
+    }
+
+    setInterval(updateStatus, 3000);
+    updateStatus();
+  </script>
+</body>
+</html>
